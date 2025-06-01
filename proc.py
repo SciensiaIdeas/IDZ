@@ -26,29 +26,20 @@ binomial = math.comb
 {                       p - соответствующие вероятности
 '''
 def discrt(m, sz):
-    d = 2 + random.randint(-sz, sz)
-    a = [d + i for i in range(sz)]
     p = [0] * sz
 
     for _ in range(m):
         r = random.randint(0, sz - 1)
         p[r] += 1
 
-    return a, p
+    return p
 
 # Вместо order использовать build-in sort(vec)
 
 def visk(n, l):
-    """Вычисление по формуле включения-исключения"""
-    j = 1
-    a = 0
-    b = 1
-
-    for i in range(l):
-        a += j * b * (l-i)**n
-        j *= -1
-        b = b * (l-i) // (i + 1)
-    return a
+    """Количество строк длины n с ровно l различными цифрами"""
+    total = sum((-1)**j * math.comb(l, j) * (l - j)**n for j in range(l+1))
+    return total
 
 # Фиксированный формат с обязательной точкой и знаковым пробелом слева
 # p1 - длина строки, p2 - точность веществ. числа
@@ -86,30 +77,36 @@ def create_task(path, sln_params, prm_params):
     output_suf = output.stem
 
     # Загрузка шаблонов
-    file = open(input_dir.with_suffix('.prm'), 'r', encoding='Windows-1251')
+    file = open(input_dir.with_suffix('.prm'), 'r', encoding='utf-8')
     prm_template = file.read()
     file.close()
 
-    file = open(input_dir.with_suffix('.sln'), 'r', encoding='UTF-8')
+    file = open(input_dir.with_suffix('.sln'), 'r', encoding='utf-8')
     sln_template = file.read()
     file.close()
 
     # Подстановка в шаблон задачи
     sln_filled = sln_template
-    for val in sln_params:
-        sln_filled = sln_filled.replace('\\p', str(val), 1)
+    for i, val in enumerate(sln_params):
+        if i < 10:
+            sln_filled = sln_filled.replace(f'\\p{i}', str(val))
+        else:
+            sln_filled = sln_filled.replace(f'\\p-{i}', str(val))
 
     prm_filled = prm_template
-    for val in prm_params:
-        prm_filled = prm_filled.replace('\\p', str(val), 1)
+    for i, val in enumerate(prm_params):
+        if i < 10:
+            prm_filled = prm_filled.replace(f'\\p{i}', str(val))
+        else:
+            prm_filled = prm_filled.replace(f'\\p-{i}', str(val))
 
     # Выгрузка шаблонов
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    file = open(output_dir.joinpath(f"{output_suf}-data.txt"), 'w', encoding='Windows-1251')
+    file = open(output_dir.joinpath(f"{output_suf}-data.txt"), 'w', encoding='utf-8')
     file.write(prm_filled)
     file.close()
 
-    file = open(output_dir.joinpath(f"{output_suf}-answer.txt"), 'w', encoding='UTF-8')
+    file = open(output_dir.joinpath(f"{output_suf}-answer.txt"), 'w', encoding='utf-8')
     file.write(sln_filled)
     file.close()

@@ -1,1 +1,1 @@
-$\Pr(\mbox{б})=\p$; $\Pr(H|\mbox{б})=\frac{\p}{\p}=\p$.
+$P(Y=m\space |\space B<=\p2)=\sum\limits_{b=0}^{\p2}P(B=b\space |\space B<=\p2)\cdot\sum\limits_{m=0}^{1}P(Y=m\space |\space B=b)=\p4; \quad B \sim Binomial(\p0,1/\p1); \quad Y \sim Hypergeometric(\p0,\p3).$

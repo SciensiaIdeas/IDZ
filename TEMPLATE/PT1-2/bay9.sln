@@ -1,2 +1,2 @@
-$\sum_{i=1}^{\p} \frac{ C_{\p}^i C_{\p}^{\p-i}}{ C_{\p}^{\p} } 
-\Bigl(1-(5/6)^i\Bigr) = \p$
+$\sum_{i=1}^{\p0} \frac{ C_{\p1}^i C_{\p2}^{\p0-i}}{ C_{\p3}^{\p0} } 
+\Bigl(1-(5/6)^i\Bigr) = \p4$

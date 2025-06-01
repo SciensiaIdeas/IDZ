@@ -1,1 +1,6 @@
-$\Pr(\mbox{б})=\p$; $\Pr(H|\mbox{б})=\frac{\p}{\p}=\p$.
+$\frac{
+\sum\limits_{b_1=0}^{\p6} P(B_1=b_1) \cdot P(B_2=0\space |\space B_1=b_1)
+\cdot
+\frac{\p4}{\p4+\p5+\p7}}{
+\sum\limits_{b_1=0}^{\p6} P(B_1=b_1) \cdot \sum\limits_{b_2=0}^{\min(\p6,\p2+b_1)}
+P(B_2=b_2\space |\space B_1=b_1) \cdot \frac{\p4+b_2}{\p4+\p5+\p7}}=\frac{\p8}{\p9}=\p-10; \quad B \sim Hypergeometric().$

@@ -1,7 +1,10 @@
 import math
 import random
+from fractions import Fraction
 
 from proc import *
+from collections import Counter
+from scipy.stats import binom, hypergeom
 
 
 def ptc31():
@@ -14,7 +17,7 @@ def ptc31():
     total = binomial(n, i)
     favorable = binomial(l, i)
     p, q, r = frac(favorable, total)
-    res1 = [l, i, n, i, p, q, strfix(r)]
+    res1 = [l, i, n, p, q, strfix(r)]
     res2 = [n, i]
     create_task('PT1-1/ptc3-1', res1, res2)
 
@@ -22,13 +25,12 @@ def ptc32():
     b = [3, 4, 5, 6, 7, 8, 10, 12]
     n = random.choice(b)
     res2 = [n]
-    j = 54 // n
-    l = j - 2
-    n1 = 54 * 53
-    i = j * (j - 1)
+    l = 54 // n
+    n1 = l * (l-1)
+    n2 = 54 * 53
 
-    p, q, r = frac(i, n1)
-    res1 = [l, j, j, p, q, strfix(r)]
+    p, q, r = frac(n1, n2)
+    res1 = [l, p, q, strfix(r)]
     create_task('PT1-1/ptc3-2', res1, res2)
 
 def ptc33():
@@ -41,30 +43,31 @@ def ptc33():
     k = n - 3
     k1 = j - 3
     p, q, r = frac(arrange(j, 3), arrange(n, 3))
-    res1 = [k, k1, n, j, j, n, p, q, strfix(r)]
+    res1 = [k, k1, n, j, p, q, strfix(r)]
     create_task('PT1-1/ptc3-3', res1, res2)
 
 def ptc34():
-    d = [('параллелипипед', 288, 14),('тетраэдр', 4, 8),('математика', 24, 10),('алгебра', 2, 7),('параллелограмм', 144, 14),('плоскость', 4, 9)]
-    pair = random.choice(d)
-    res2 = [pair[0]]
+    d = ['параллелепипед','тетраэдр','математика','алгебра','параллелограмм','плоскость']
+    w = random.choice(d)
+    res2 = [w]
 
-    r = math.factorial(pair[2]) // pair[1]
-    res1 = [pair[1], pair[2], r]
+    l = len(w)
+    freqs = Counter(w).values()
+    n = math.prod(math.factorial(x) for x in freqs)
+
+    r = math.factorial(l) // n
+    res1 = [n, l, r]
     create_task('PT1-1/ptc3-4', res1, res2)
 
 def ptc35():
-    b = [5, 6, 7, 8, 9]
-    c = [2, 3, 4]
+    b = [5, 7, 8, 9, 10]
     n = random.choice(b)
-    k = random.choice(c)
-    res2 = [n, k]
+    res2 = [n]
 
-    i = 6
-    a = binomial(i, k)
-    k1, n1, f = frac(k, i)
-    r = a * f**n
-    res1 = [k1, n1, n, k, strfix(r)]
+    n1 = 15 * (2**n-2)
+    n2 = 6**n
+    p, q, r = frac(n1, n2)
+    res1 = [n, p, q, strfix(r)]
     create_task('PT1-1/ptc3-5', res1, res2)
 
 def ptc36():
@@ -74,11 +77,10 @@ def ptc36():
     k = random.choice(c)
     res2 = [n, k]
 
-    i = 10
-    a = binomial(i, k)
-    k1, n1, f = frac(k, i)
-    r = a * f**n
-    res1 = [k1, n1, n, k, strfix(r)]
+    n1 = binomial(10, k) * visk(n, k)
+    n2 = 10 ** n
+    p, q, r = frac(n1, n2)
+    res1 = [k, n, p, q, strfix(r)]
     create_task('PT1-1/ptc3-6', res1, res2)
 
 def ptc37():
@@ -89,141 +91,146 @@ def ptc37():
     l = random.choice(c)
     res2 = [n, k, l]
 
-    n1 = visk(n, l)
-    k1 = visk(k, l)
-    p = n1 * k1
-    q = l ** (n+k)
-    p, q, r = frac(p, q)
-    res1 = [l-1, l, l, n, l-1, l, l, k, l, n, k, p, q, strfix(r)]
+    fr = 1 / l
+    p1 = 1 - (1-fr)**n
+    p2 = 1 - (1-fr)**k
+    frr = (p1*p2)**l
+    res1 = [n, k, l, strfix(frr)]
     create_task('PT1-1/ptc3-7', res1, res2)
+
 
 def bay1():
     a = [8, 10, 12, 16, 18]
     c = [2, 3]
     n = random.choice(a)
-    k = random.choice(a)
-    l1 = random.choice(c)
-    l2 = random.choice(c)
-    res2 = [n, k, l1, l2]
+    l = random.choice(a)
+    x = random.choice(c)
+    k = random.choice(c)
+    res2 = [n, l, x, k]
 
-    f = n / (n + k) * ((n + k) / (l2 + n + k) + l1 * l2 / (l1 + n + k) / (l2 + n + k))
-    f += n * l2 / (l1 + n + k) / (l2 + n + k)
-    g = 0
-    for i in range(min(l1+1, l2)):
-        d = binomial(n, i) * binomial(k, l1-i)
-        h = d / binomial(n+k, l1)
-        d1 = binomial(n+i, i+1) * binomial(k+l1-i, l2-i-1)
-        d2 = binomial(n+k+l1, l2)
-        h *= d1 / d2
-        g += h
-    g *= (n+1) / (n+k-l1+l2)
-
-    _f = strfix(f)
-    _g = strfix(g)
-    res1 = [_f, _g, _f, strfix(g / f)]
+    p = 1 / l
+    r = sum(binom.pmf(b, n, p) / binom.cdf(x, n, p) * hypergeom.cdf(1, n, b, k) for b in range(x+1))
+    res1 = [*res2, strfix(r)]
     create_task('PT1-2/bay1', res1, res2)
 
 def bay2():
     a = [8, 10, 12, 16, 18]
     c = [2, 3]
-    n = random.choice(a)
-    k = random.choice(a)
     n1 = random.choice(a)
-    k1 = random.choice(a)
-    l1 = random.choice(c)
-    l2 = random.choice(c)
-    res2 = [n, k, n1, k1, l1, l2]
+    n2 = random.choice(a)
+    m1 = random.choice(a)
+    m2 = random.choice(a)
+    k1 = random.choice(c)
+    k2 = random.choice(c)
+    res2 = [n1, n2, m1, m2, k1, k2]
 
-    f = n*l1 / (n+k) / (n1+k1+l1-l2)
-    f += n1 * (k1+n1-l2) / (n1+k1) / (n1+k1+l1-l2)
-    g = 0
-    for i in range(min(l1, l2)+1):
-        d = binomial(n, i) * binomial(k, l1-i)
-        h = d / binomial(n+k, l1)
-        d1 = binomial(n1, i) * binomial(k1, l1-i)
-        d2 = binomial(n1+k1, l2)
-        h *= d1 / d2
-        g += h
-    g *= k1 / (n1+k1+l1-l2)
+    N1 = n1 + n2
+    N2 = m1 + m2
+    M = N2 + k1
+    l1 = max(0, k1 - n2)
+    l2 = min(k1, n1)
+    numerator = 0.0
+    denominator = 0.0
+    for w in range(l1, l2+1):
+        p_w = hypergeom.pmf(w, N1, n1, k1)  # P(W = w)
+        p_x_eq_w = hypergeom.pmf(w, M, m1 + w, k2)  # P(X = w | W = w)
+        p_white_draw = (m1 + w) / M  # P(белый из 2-го ящика при W = w)
 
-    _f = strfix(f)
-    _g = strfix(g)
-    res1 = [_f, _g, _f, strfix(g / f)]
+        numerator += p_w * p_x_eq_w * p_white_draw
+        denominator += p_w * p_white_draw
+
+    r = numerator / denominator
+    res1 = [strfix(numerator), strfix(denominator), strfix(r)]
     create_task('PT1-2/bay2', res1, res2)
 
 def bay3():
     a = [8, 10, 12, 16, 18]
-    n = random.choice(a)
-    k = random.choice(a)
     n1 = random.choice(a)
-    k1 = random.choice(a)
-    res2 = [n, k, n1, k1]
+    n2 = random.choice(a)
+    m1 = random.choice(a)
+    m2 = random.choice(a)
+    res2 = [n1, n2, m1, m2]
 
-    s = (n+k) * (n1+k1)
-    p1 = n * k1 / s / 2
-    p2 = k * n1 / s / 2
-    p3 = 1 - p1 - p2
-    p1 *= ((n - 1) * (n1 + 1) + (k + 1) * (n1 - 1)) / s
-    g = p2 * (n + 1) * (n1 - 1) / s
-    p2 = g + p2 * (k - 1) * (k1 + 1) / s
-    g += p3 * k * k1 / s
-    p3 *= (n * n1 + k * k1) / s
-    f = p1 + p2 + p3
+    p_w1 = [n2 / (n1 + n2), n1 / (n1 + n2)]  # P(W1=0), P(W1=1)
+    p_w2 = [m2 / (m1 + m2), m1 / (m1 + m2)]  # P(W2=0), P(W2=1)
 
-    _f = strfix(f)
-    _g = strfix(g)
-    res1 = [_f, _g, _f, strfix(g / f)]
+    numerator = 0.0
+    denominator = 0.0
+    for w1 in [0, 1]:
+        for w2 in [0, 1]:
+            pw = p_w1[w1] * p_w2[w2]
+            white1 = n1 - w1 + w2
+            white2 = m1 - w2 + w1
+            total1 = n1 + n2
+            total2 = m1 + m2
+            p_white1 = white1 / total1
+            p_white2 = white2 / total2
+            psame = p_white1 * p_white2 + (1 - p_white1) * (1 - p_white2)
+            if w1 == w2:
+                numerator += pw * psame
+            denominator += pw * psame
+
+
+    r = numerator / denominator
+    res1 = [strfix(numerator), strfix(denominator), strfix(r)]
     create_task('PT1-2/bay3', res1, res2)
 
 def bay4():
     a = [8, 10, 12, 16, 18]
     c = [2, 3]
     n = random.choices(a, k=3)
-    k = random.choices(a, k=3)
-    l1 = random.choice(c)
-    l2 = random.choice(c)
-    res2 = [n[0], k[0], n[1], k[1], n[2], k[2], l1, l2]
+    m = random.choices(a, k=3)
+    k1 = random.choice(c)
+    k2 = random.choice(c)
+    res2 = [n[0], m[0], n[1], m[1], n[2], m[2], k1, k2]
 
-    s = n[2] + l2 + k[2]
-    p1 = (k[2] + n[2]) / s
-    p2 = (n[1] + k[1]) * l2 / (l1 + n[1] + k[1]) / s
-    p3 = 1 - p1 - p2
-    p1 = p1 * n[2] / (n[2] + k[2])
-    p2 = p2 * n[1] / (n[1] + k[1])
-    p3 = p3 * n[0] / (n[0] + k[0])
-    f = p1 + p2 + p3
+    numerator = 0.0
+    denominator = 0.0
+    total1 = n[0] + m[0]
+    total3 = n[2] + m[2]
 
-    for i in range(l1+1):
-        s = binomial(n[0], i) * binomial(k[0], l1-i)
-        g = s / binomial(n[0]+k[0], l1)
-        s = binomial(k[1]+l1-i, l2-1)*(n[2]+i)
-        p = s / binomial(n[1]+k[1]+l1, l2)
-        g *= p*(n[2]+1)/(n[2]+k[2]+l2)
+    for b1 in range(max(0, k1 - m[0]), min(k1, n[0]) + 1):
+        p_b1 = hypergeom.pmf(b1, total1, n[0], k1)
+        white2 = n[1] + b1
+        black2 = m[1] + k1 - b1
+        total2_new = white2 + black2
 
-    _f = strfix(f)
-    _g = strfix(g)
-    res1 = [_f, _g, _f, strfix(g / f)]
+        p_b2_eq_0 = hypergeom.pmf(0, total2_new, white2, k2)
+        p_white_draw_if_b2_0 = n[2] / (total3 + k2)
+        numerator += p_b1 * p_b2_eq_0 * p_white_draw_if_b2_0
+
+        for b2 in range(max(0, k2 - black2), min(k2, white2) + 1):
+            p_b2 = hypergeom.pmf(b2, total2_new, white2, k2)
+            p_white_draw = (n[2] + b2) / (total3 + k2)
+            denominator += p_b1 * p_b2 * p_white_draw
+
+    r = numerator / denominator
+    res1 = [*res2, strfix(numerator), strfix(denominator), strfix(r)]
     create_task('PT1-2/bay4', res1, res2)
 
 def bay5():
     a = [8, 10, 12, 16, 18]
     c = [2, 3]
     n = random.choices(a, k=3)
-    k = random.choices(a, k=3)
-    l = random.choice(c)
-    res2 = [n[0], k[0], n[1], k[1], n[2], k[2], l]
+    m = random.choices(a, k=3)
+    k = random.choice(c)
+    res2 = [n[0], m[0], n[1], m[1], n[2], m[2], k]
+    urns = zip(n, m)
 
-    i = n[0] + k[0]
-    f = binomial(n[0], l) / binomial(i, l)
-    g = f / 3
-    i = n[1] + k[1]
-    f += binomial(n[1], l) / binomial(i, l)
-    i = n[2] + k[2]
-    f = (f + binomial(n[1], l) / binomial(i, l)) / 3
+    likelihoods = []
+    for ni, mi in urns:
+        if k > ni:
+            likelihoods.append(0.0)
+        else:
+            N = ni + mi
+            likelihood = hypergeom.pmf(k, N, ni, k)  # all k must be white
+            likelihoods.append(likelihood)
 
-    _f = strfix(f)
-    _g = strfix(g)
-    res1 = [_f, _g, _f, strfix(g / f)]
+    numerator = likelihoods[0] / 3
+    denominator = sum(likelihoods) / 3
+
+    r = numerator / denominator
+    res1 = [strfix(numerator), strfix(denominator), strfix(r)]
     create_task('PT1-2/bay5', res1, res2)
 
 def bay6():
@@ -232,10 +239,27 @@ def bay6():
     c = [4, 5, 6]
     p = random.choices(a, k=5)
     p.sort()
-    _, q = discrt(10, 5)
+    q = discrt(10, 5)
     n = random.choice(b)
     k = random.choice(c)
-    res2 = [*(f'0.0{x}' for x in p), *(f'{x}0' for x in p), n, k]
+    q_display = dict(zip(q, ('G', 'F', 'R', 'C', 'B')))
+    q_display = dict(sorted(q_display.items(), reverse=True)).items()
+    first = True
+    l1 = 0; v1 = 0; s = []
+    for val, lit in q_display:
+        if first:
+            l1 = lit; v1 = val * 10
+            first = False
+        else:
+            if val > 0:
+                s.append(f'{lit} - {10*val}\\%')
+            else:
+                s1 = " , остальные не поставляют"
+                break
+    else:
+        s1 = ""
+    literal = ", ".join(s)
+    res2 = [*p, l1, v1, literal, s1, n, k]
 
     n1 = k*n // 100
     h = 0
@@ -250,7 +274,7 @@ def bay6():
             g += r
         h += g * q[j1]
     h /= 10
-    res1 = [n1, n, n, strfix(h)]
+    res1 = [n1, n, strfix(h)]
     create_task('PT1-2/bay6', res1, res2)
 
 def bay7():
@@ -258,7 +282,7 @@ def bay7():
     b = [50, 100, 150, 200, 300]
     c = [2, 3, 4]
     n = random.choice(a)
-    _, p = discrt(10, 5)
+    p = discrt(10, 5)
     k = random.choice(b)
     n1 = random.choice(c)
     res2 = [n, *p, k, n1]
@@ -276,7 +300,7 @@ def bay7():
         k3 = binomial(k2, k1)
         p1 += j * k3 * p[j-1]
     p3 = p2 / p1
-    res1 = [n1, n, k1, n, k1, strfix(p3)]
+    res1 = [n1, n, k1, strfix(p3)]
     create_task('PT1-2/bay7', res1, res2)
 
 def bay8():
@@ -316,7 +340,7 @@ def bay8():
             g += p[j]
         r = strfix(g)
 
-    res1 = [n1, n, k1, n, k1-1, n, f'0.00{k}', f'0.99{k}', n, n, k1, n1, n, f'0.00{k}', f'0.99{10-k}', n, r]
+    res1 = [n1, n, k1, k1-1, f'0.00{k}', f'0.99{k}', f'0.99{10-k}', r]
     create_task('PT1-2/bay8', res1, res2)
 
 def bay9():
@@ -339,34 +363,68 @@ def bay9():
         k1 = binomial(m, n1) * k4
         g += k3 / k1
 
-    res1 = [n1, n, k, n1, n+k, n1, strfix(g)]
+    res1 = [n1, n, k, n+k, strfix(g)]
     create_task('PT1-2/bay9', res1, res2)
 
 def bay10():
     a = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    b = ['«хорошо»', '«отлично»', '«удовлетворительно»', '«хорошо» или «отлично»', '«хорошо» или «удовлетворительно»', '«не удовлетворительно»']
+    b = [('«хорошо»', [1,2]), ('«отлично»', [0,1]), ('«удовлетворительно»', [1,2]), ('«хорошо» или «отлично»', [0,1,2]),
+         ('«хорошо» или «удовлетворительно»', [1,2]), ('«не удовлетворительно»', [2])]
+    c = ['отличник', 'хорошо успевающий', 'слабо занимающийся']
     p = random.choices(a, k=3)
     k1 = random.randint(0, len(b)-1)
-    s = b[k1]
-    res2 = [*map(formatplus, p), s]
+    s = b[k1][0]
+    st = random.choice(b[k1][1])
+    res2 = [*map(formatplus, p), s, c[st]]
 
-    k = sum(p) * 3
+    k = sum(p)
     match k1:
         case 1:
-            k2 = p[1] + p[2]
-        case 2:
-            k2 = 3 * p[0] + p[1]
+            s = f'\\frac{{{p[0]}}}{{{k}}}+\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
+            sr = Fraction(p[0], k) + Fraction(p[1], k) / 3
+            if st == 0:
+                s1 = f'\\frac{{{p[0]}}}{{{k}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[0], k) / sr
+            else:
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[1], k) / 3 / sr
         case 3:
-            k2 = p[1] + p[2]
+            s = f'\\frac{{{p[0]}}}{{{k}}}+\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
+            sr = Fraction(p[0], k) + (Fraction(p[1], k)*2 + Fraction(p[2], k)) / 3
+            if st == 0:
+                s1 = f'\\frac{{{p[0]}}}{{{k}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[0], k) / sr
+            elif st == 1:
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[0], k)*Fraction(2,3) / sr
+            else:
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[2], k) / 3 / sr
         case 4:
-            k2 = 3 * p[0] + 2 * p[1] + p[2]
+            s = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}'
+            sr = (Fraction(p[1], k) + Fraction(p[2], k))* 2/3
+            if st == 1:
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[1], k)*Fraction(2,3) / sr
+            else:
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[2], k)*Fraction(2,3) / sr
         case 5:
-            k2 = 2 * (p[1] + p[2])
+            s = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
+            sr = Fraction(p[2], k*3)
+            s1 = f'\\frac{{{sr.numerator}}}{{{sr.denominator}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+            sr1 = Fraction(1, 1)
         case _:
-            k2 = p[2]
-    k2, k, g = frac(k2, k)
-    k3, k4, h = frac(3*p[1], 3*p[1]+p[2])
-    res1 = [k2, k, strfix(g), k3, k4, strfix(h)]
+            s = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
+            sr = (Fraction(p[1], k) + Fraction(p[2], k)) / 3
+            if st == 1:
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[1], k) / sr
+            else:
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                sr1 = Fraction(p[2], k) / 3 / sr
+
+    res1 = [s, sr.numerator, sr.denominator, strfix(float(sr)), s1, sr1.numerator, sr1.denominator, strfix(float(sr1))]
     create_task('PT1-2/bay10', res1, res2)
 
 def bay11():
@@ -413,8 +471,9 @@ def bay11():
             q = p
 
     p = 0 if h == 0 else q/h
-    res1 = [l, strfix(p), n1, k1, k2, k3, k, k3, k, k4, m, n, k]
+    res1 = [l, strfix(p), n1, k1, k2, k3, k, k4, m, n]
     create_task('PT1-2/bay11', res1, res2)
+
 
 def nez1():
     a = [300, 400, 500, 600, 800]
@@ -531,4 +590,4 @@ def nez5():
     create_task('PT1-3/nez5', res1, res2)
 
 if __name__ == '__main__':
-    nez5()
+    bay11()

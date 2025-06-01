@@ -1,1 +1,1 @@
-$\Pr(\mbox{с})=\p$; $\Pr(H|\mbox{с})=\frac{\p}{\p}=\p$.
+$\frac{\displaystyle \sum_{w = w_{\min}}^{w_{\max}} P(W = w) \cdot P(X = w \mid W = w) \cdot P(\text{белый шар} \mid W = w)}{\displaystyle \sum_{w = w_{\min}}^{w_{\max}} P(W = w) \cdot P(\text{белый шар} \mid W = w)}=\frac{\p0}{\p1}=\p2; \quad W \sim Hypergeometric().$

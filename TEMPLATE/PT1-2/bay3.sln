@@ -1,1 +1,2 @@
-$\Pr(\mbox{о.ц.})=\p$; $\Pr(H|\mbox{о.ц.})=\frac{\p}{\p}=\p$.
+$\frac{( P(W_1=1) \cdot P(W_2=1) \cdot P_{\text{same}}(1, 1)) + ( P(W_1=0) \cdot P(W_2=0) \cdot P_{\text{same}}(0,0))}
+{\sum\limits_{0\le i\le 1,0\le j\le 1}(P(W_1=i) \cdot P(W_2=j) \cdot P_{\text{same}}(i,j))}=\frac{\p0}{\p1}=\p2$
