@@ -383,47 +383,48 @@ def bay10():
             s = f'\\frac{{{p[0]}}}{{{k}}}+\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
             sr = Fraction(p[0], k) + Fraction(p[1], k) / 3
             if st == 0:
-                s1 = f'\\frac{{{p[0]}}}{{{k}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[0]}}}{{{k}}}'
                 sr1 = Fraction(p[0], k) / sr
             else:
-                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
                 sr1 = Fraction(p[1], k) / 3 / sr
         case 3:
             s = f'\\frac{{{p[0]}}}{{{k}}}+\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
             sr = Fraction(p[0], k) + (Fraction(p[1], k)*2 + Fraction(p[2], k)) / 3
             if st == 0:
-                s1 = f'\\frac{{{p[0]}}}{{{k}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[0]}}}{{{k}}}'
                 sr1 = Fraction(p[0], k) / sr
             elif st == 1:
-                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}'
                 sr1 = Fraction(p[0], k)*Fraction(2,3) / sr
             else:
-                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
                 sr1 = Fraction(p[2], k) / 3 / sr
         case 4:
             s = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}'
             sr = (Fraction(p[1], k) + Fraction(p[2], k))* 2/3
             if st == 1:
-                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}'
                 sr1 = Fraction(p[1], k)*Fraction(2,3) / sr
             else:
-                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{2}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{2}}{{3}}'
                 sr1 = Fraction(p[2], k)*Fraction(2,3) / sr
         case 5:
             s = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
             sr = Fraction(p[2], k*3)
-            s1 = f'\\frac{{{sr.numerator}}}{{{sr.denominator}}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+            s1 = f'\\frac{{{sr.numerator}}}{{{sr.denominator}}}'
             sr1 = Fraction(1, 1)
         case _:
             s = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}+\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
             sr = (Fraction(p[1], k) + Fraction(p[2], k)) / 3
             if st == 1:
-                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[1]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
                 sr1 = Fraction(p[1], k) / sr
             else:
-                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}} : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
+                s1 = f'\\frac{{{p[2]}}}{{{k}}} \\cdot \\frac{{1}}{{3}}'
                 sr1 = Fraction(p[2], k) / 3 / sr
 
+    s1 += f' : \\frac{{{sr.numerator}}}{{{sr.denominator}}}'
     res1 = [s, sr.numerator, sr.denominator, strfix(float(sr)), s1, sr1.numerator, sr1.denominator, strfix(float(sr1))]
     create_task('PT1-2/bay10', res1, res2)
 
@@ -485,11 +486,10 @@ def nez1():
 
     n = 2*(n+k) // 100
     g = l / 10
-    k = 3
-    g = 1 - g**k
+    g = 1 - g**3
     f = 1 - g**n
 
-    res1 = [l, n, strfix(f)]
+    res1 = [*res2, strfix(f)]
     create_task('PT1-3/nez1', res1, res2)
 
 def nez2():
@@ -513,36 +513,31 @@ def nez2():
 
 def nez3():
     c = [5, 6, 7, 8, 9]
-    n = random.choice(c)
-    k = random.choice(c)
-    res2 = [n, k]
+    b = [2, 3, 4]
+    p1 = random.choice(c)
+    p2 = random.choice(c)
+    n = random.choice(b)
+    res2 = [n, p1, p2]
+    p1 /= 10; p2 /= 10
 
-    g1 = n / 10
-    g2 = k / 10
-    f0 = (g1*g2) ** 3
-    g3 = 1 - g1
-    g4 = 1 - g2
-    f1 = (g1*g2) ** 2 *g3*g4
-    f2 = (g3*g4) ** 2 *g1*g2
-    f3 = (g3*g4) ** 3
-    f = f0 + 3*f1 + 3*f2 + f3
-
-    res1 = [strfix(f0), strfix(f1), strfix(f2), strfix(f3), strfix(f)]
+    r = sum(binom.pmf(i, n, p1) * binom.pmf(i, n, p2) for i in range(n+1))
+    res1 = [n, strfix(r)]
     create_task('PT1-3/nez3', res1, res2)
 
 def nez4():
     a = [5, 6, 9]
     b = [3, 4, 5, 6]
-    c = [1, 2, 3, 4, 5]
+    c = [5, 6, 8, 10, 12]
+    x = random.choice(a)
     n = random.choice(b)
-    k = random.choice(a)
     l = random.choice(c)
-    res2 = [n, k, l]
+    res2 = [x, n, l]
 
-    g = l / 10
-    f = (1 - g**n)**k
+    p = l / 100
+    N = n * x
+    r = 1 - sum(binom.pmf(i, N, p) for i in range(n))
 
-    res1 = [l, n, k, strfix(f)]
+    res1 = [n-1, strfix(r), l, N]
     create_task('PT1-3/nez4', res1, res2)
 
 def nez5():
@@ -590,4 +585,4 @@ def nez5():
     create_task('PT1-3/nez5', res1, res2)
 
 if __name__ == '__main__':
-    bay11()
+    nez4()
