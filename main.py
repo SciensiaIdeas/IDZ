@@ -1,10 +1,7 @@
-import math
-import random
 from fractions import Fraction
-
 from proc import *
 from collections import Counter
-from scipy.stats import binom, hypergeom
+from scipy.stats import binom, hypergeom, norm, poisson
 
 
 def ptc31():
@@ -548,41 +545,150 @@ def nez5():
     np = random.choice(c)
     k = random.choice(b)
     m = random.choice(b)
-    res2 = [n, np, k, n-m, n]
+    s = n - m
+    res2 = [n, np, k, s+1, n]
 
-    n1 = k + m + 1
-    f = np / 100
-    g = 1 - f
-    if n1 <= n:
-        g2 = g * g
-        g3 = g2 * g
-        r1 = f'(1-{strfix(f, p2=2)}^2)^'
-        r2 = f'{{{n1}}} '
-        n2 = n - n1
-        if n2 == 0:
-            r3 = f'(1-{strfix(f, p2=2)}^3)^'
-        elif n2 == 1:
-            r3 = '{}; '
-        else:
-            r3 = f'{{{n2}}}; '
-    else:
-        g2 = g * g
-        g3 = g
-        n2 = k+m-n
-        if n2 == 0:
-            r1 = f'(1-{strfix(f, p2=2)})^'
-        elif n2 == 1:
-            r1 = '{} '
-        else:
-            r1 = f'{{{n2}}} '
-        n1 = n - n2
-        r2 = f'(1-{strfix(f, p2=2)}^2)^'
-        r3 = '{}; ' if n1==1 else f'{{{n1}}}; '
+    p = np / 100
+    k1 = min(k, s)
+    k2 = max(0, k-k1)
+    k3 = n - max(k, s)
+    p1 = (1-p**2)**k1   # I
+    p2 = (1-p)**k2      # I, III
+    p3 = (1-p**2)**k3   # III
+    r = p1 * p2 * p3
 
-    g = g2**n1 * g3**n2
-
-    res1 = [r1, r2, r3, strfix(g)]
+    res1 = [p, k1, k2, k3, strfix(r)]
     create_task('PT1-3/nez5', res1, res2)
 
+def nez6():
+    a = [4,5,6,7,8]
+    c = [2,3,4,5]
+    random.shuffle(c)
+    n = c[0:3]
+    pn = random.choices(a, k=3)
+    res2 = [*n, *pn]
+
+    g = tuple(1-x/10 for x in pn)
+    r = math.prod(1 - gi**ni for gi, ni in zip(g, n))
+    res1 = [*(strfix(x,1,1) for x in g), *n, strfix(r)]
+    create_task('PT1-3/nez6', res1, res2)
+
+def nez7():
+    a = [5,10,15,20,25]
+    c = [1,2,3,4,5,6,7,8,9]
+    n = random.choice(a)
+    k = n * 3
+    m = random.choice(c)
+    res2 = [n, k, m]
+
+    p = 1 - m/100
+    r = (1 - (1 - (1-p**n)**2)**3)*(1-p**k)
+    res1 = [strfix(p,1,2), n, k, strfix(r)]
+    create_task('PT1-3/nez7', res1, res2)
+
+def nez8():
+    a = [1,2,3,4,5]
+    c = [2,3,4]
+    d = [("Два",2), ("Три",3), ("Четыре",4)]
+    el = random.choice(d)
+    n = random.choice(c)
+    m = random.choice(a)
+    res2 = [el[0], n, m]
+    j = el[1]
+
+    p = 1 - m/10
+    r = 1 - (1 - p**n)**j
+    res1 = [strfix(p,1,1), n, j, strfix(r)]
+    create_task('PT1-3/nez8', res1, res2)
+
+def nez9():
+    a = [1,2,3,4,5]
+    b = [5,6,9,10,12]
+    c = [2,3,4]
+    d = [("Две",2), ("Три",3), ("Четыре",4)]
+    el = random.choice(d)
+    n = random.choice(b)
+    m = random.choice(a)
+    n1 = random.choice(c)
+    m1 = random.choice(a)
+    res2 = [el[0], n, m, n1, m1]
+    j = el[1]
+
+    p = 1 - m/10
+    f = 1 - m1/10
+    g = (1 - (1-p**n)**j)*(1 - (1-f**n1)**j)
+    res1 = [strfix(p,1,1), n, j, strfix(f,1,1), n1, strfix(g)]
+    create_task('PT1-3/nez9', res1, res2)
+
+
+def berniml():
+    a = [2,3,4,5,10]
+    b = [500,1000,2000,3000,5000]
+    c = [0.5,1,1.5,2,2.5]
+    i = random.choice(a)
+    n = random.choice(b)
+    g = random.choice(c)
+    n1 = round(g * math.sqrt(n * (i - 1) / i**2))
+    m1 = round(n / i - n1)
+    m2 = round(n / i + n1)
+    res2 = [i, n, m1, m2]
+
+    f = n / i
+    g = math.sqrt(f * (1 - 1 / i))
+    g1 = (m1 - f) / g
+    g2 = (m2 - f) / g
+    g = norm.cdf(g2) - norm.cdf(g1)
+    res1 = [m1, m2, n, i, i-1, strfix(g)]
+    create_task('PT1-4/berniml', res1, res2)
+
+def bernips():
+    a = [500,800,1000,1500,2000]
+    b = [500,1000,1500,2000,3000]
+    c = [0.5,1,1.5,2,2.5]
+    i = random.choice(a)
+    n = random.choice(b)
+    g = random.choice(c)
+    f = n / i
+    k = int(f+g*math.sqrt(n*(i-1)/i**2))
+    res2 = [i, n, k]
+
+    g = poisson.cdf(k, f)
+    res1 = [k, n, i, i-1, strfix(g)]
+    create_task('PT1-4/bernips', res1, res2)
+
+def bernlml():
+    a = [2,3,4,5,10]
+    b = [500,1000,2000,3000,5000]
+    c = [0.5,1,1.5,2,2.5]
+    i = random.choice(a)
+    n = random.choice(b)
+    g = random.choice(c)
+    n1 = round(g * math.sqrt(n * (i - 1) / i**2))
+    j = random.randint(-1, 0) * 2
+    k = round(n / i + j * n1)
+    res2 = [i, n, k]
+
+    f = n / i
+    g = math.sqrt(f * (1 - 1 / i))
+    g1 = (k - f) / g
+    r = norm.pdf(g1) / g
+    res1 = [n, k, i, i-1, n-k, strfix(r)]
+    create_task('PT1-4/bernlml', res1, res2)
+
+def bernlps():
+    a = [500,800,1000,1500,2000]
+    b = [500,1000,1500,2000,3000]
+    c = [0.5,1,1.5,2,2.5]
+    i = random.choice(a)
+    n = random.choice(b)
+    g = random.choice(c)
+    f = n / i
+    k = int(f + g * math.sqrt(n * (i - 1) / i ** 2))
+    res2 = [i, n, k]
+
+    r = poisson.pmf(k, f)
+    res1 = [n, k, i, i-1, n-k, strfix(r)]
+    create_task('PT1-4/bernlps', res1, res2)
+
 if __name__ == '__main__':
-    nez4()
+    bernlps()
